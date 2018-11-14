@@ -1,12 +1,13 @@
-const express =  require("express");
+
+const express = require('express');
 const router = express.Router();
-let {list,show,create,update,remove} = require( "../controllers/VehicleController");
 
+const vehicleController = require("../controllers/VehicleController");
 
-router.get("/vehicles", list);
-router.get("/vehicles/:id", show);
-router.post("/vehicles", create);
-router.put("/vehicles/:id", update);
-router.delete("/vehicles/:id", remove);
+router.get("/vehicles", vehicleController.list);
+
+router.get("/vehicles/:id", vehicleController.show);
+
+router.post("/vehicles", vehicleController.create);
 
 module.exports = router;

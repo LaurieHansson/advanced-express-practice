@@ -1,25 +1,37 @@
-// require comments from comments
-const comments = require("../comments");
-// set a variable that stores amount of comments
-let commentCount = comments.length;
+// import the Comments monoose model
+const Comments = require("../models/commentModel");
 
+// finds all comments and lists them
+module.exports.list = function (req, res, next) {
+  Comments.find({}).exec()
+    .then(comments => {
+      return res.send(comments);
+    })
+    .catch(err => {
+      console.log("no comments ", err);
+      return res.send(err);
+    });
+};
 
-module.exports.list =  function list(request, response) {
-    return response.json(comments);
-   }
-   module.exports.show =  function show(request, response) {
-    let comment = comments.find((id) => id._id == request.params.id);
-    response.json(comment); 
-   }
-   module.exports.create =  function create(request, response) {
-    request.body._id = commentCount + 1;
-    comments.push(request.body);
-    commentCount++;
-    response.json(request.body); 
-   }
-   module.exports.update =  function update(request, response) {
-    return response.json({theId: request.params.id});
-   }
-   module.exports.remove =  function remove(request, response) {
-    return response.json({});
-}
+//  find comments by ID and show
+module.exports.show = function (req, res, next) {
+  Comments.findById(req.params.id).exec()
+    .then(comment => {
+      return res.send(comment);
+    })
+    .catch(err => {
+      console.log("no comment ", err);
+      return res.send(err);
+    });
+};
+
+// save and create the new document into mongoDB
+
+module.exports.create = function (req, res, next) {
+  const comment = new Comments();
+ comment.body = req.body.body;
+  comment.save((err, newComment) => {
+    if (err) return res.send(err);
+    return res.send(newComment);
+  });
+};

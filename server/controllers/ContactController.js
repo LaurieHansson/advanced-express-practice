@@ -1,22 +1,37 @@
-const contacts = require("../contacts");
-let contactAmount= contacts.length
+// import the contacts monoose model
+const contacts = require("../models/contactModel");
 
-module.exports.list =  function list(request, response) {
-  return response.json(contacts);
- }
- module.exports.show =  function show(request, response) {
-  let contact = contacts.find((id) => id._id == request.params.id);
-  response.json(contact);
- }
- module.exports.create =  function create(request, response) {
-  request.body._id = contactAmount + 1;   
-  contacts.push(request.body);
-  contactAmount++;
-  response.json(request.body);    
- }
- module.exports.update =  function update(request, response) {
-  return response.json({theId: request.params.id});
- }
- module.exports.remove =  function remove(request, response) {
-  return response.json({});
-}
+// finds all contacts and lists them
+module.exports.list = function (req, res, next) {
+  contacts.find({}).exec()
+    .then(contacts => {
+      return res.send(contacts);
+    })
+    .catch(err => {
+      console.log("no contacts found ", err);
+      return res.send(err);
+    });
+};
+
+//  find contacts by ID and show
+module.exports.show = function (req, res, next) {
+  contacts.findById(req.params.id).exec()
+    .then(contact => {
+      return res.send(contact);
+    })
+    .catch(err => {
+      console.log("can't find contact ", err);
+      return res.send(err);
+    });
+};
+
+// save and create the new document into mongoDB
+
+module.exports.create = function (req, res, next) {
+  const contact = new contacts();
+ contact.body = req.body.body;
+  contact.save((err, newcontact) => {
+    if (err) return res.send(err);
+    return res.send(newcontact);
+  });
+};

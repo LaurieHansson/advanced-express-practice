@@ -1,23 +1,37 @@
-const products = require("../products");
-const productCount = products.length;
+// import the products monoose model
+const products = require("../models/productModel");
 
+// finds all products and lists them
+module.exports.list = function (req, res, next) {
+  products.find({}).exec()
+    .then(products => {
+      return res.send(products);
+    })
+    .catch(err => {
+      console.log(" no products to show ", err);
+      return res.send(err);
+    });
+};
 
-module.exports.list =  function list(request, response) {
-    return response.json(products);
-   }
-   module.exports.show =  function show(request, response) {
-    let product = products.find((id) => id._id == request.params.id);
-    response.json(product);
-   }
-   module.exports.create =  function create(request, response) {
-    request.body._id = productCount + 1;   
-    products.push(request.body);
-    productCount++;
-    response.json(request.body);    
-   }
-   module.exports.update =  function update(request, response) {
-    return response.json({theId: request.params.id});
-   }
-   module.exports.remove =  function remove(request, response) {
-    return response.json({});
-}
+//  find products by ID and show
+module.exports.show = function (req, res, next) {
+  products.findById(req.params.id).exec()
+    .then(product => {
+      return res.send(product);
+    })
+    .catch(err => {
+      console.log("no product to show  ", err);
+      return res.send(err);
+    });
+};
+
+// save and create the new document into mongoDB
+
+module.exports.create = function (req, res, next) {
+  const product = new products();
+ product.body = req.body.body;
+  product.save((err, newproduct) => {
+    if (err) return res.send(err);
+    return res.send(newproduct);
+  });
+};

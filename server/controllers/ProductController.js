@@ -1,5 +1,5 @@
 const products = require("../products");
-let productCount = products.length;
+const productCount = products.length;
 
 
 module.exports.list =  function list(request, response) {
